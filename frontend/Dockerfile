@@ -1,24 +1,14 @@
 # syntax = docker/dockerfile:1
 
-# Adjust NODE_VERSION as desired
-ARG NODE_VERSION=16
-FROM node:${NODE_VERSION}-slim as base
+# Stage 1: Build the React application
+FROM node:16-slim as build
 
 LABEL fly_launch_runtime="Node.js"
 
-# Node.js app lives here
+# Set the working directory
 WORKDIR /app
 
-# Set production environment
-ENV NODE_ENV="production"
-ARG YARN_VERSION=1.22.21
-RUN npm install -g yarn@$YARN_VERSION --force
-
-
-# Throw-away build stage to reduce size of final image
-FROM base as build
-
-# Install packages needed to build node modules
+# Install build dependencies
 RUN apt-get update -qq && \
     apt-get install --no-install-recommends -y \
     build-essential \
@@ -29,25 +19,27 @@ RUN apt-get update -qq && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-# Install node modules
-COPY package-lock.json package.json yarn.lock ./
+# Copy dependency files
+COPY package.json yarn.lock ./
+
+# Install dependencies
 RUN yarn install --frozen-lockfile
 
-# Copy application code
+# Copy application source
 COPY . .
 
-# Build application
+# Build the application
 RUN yarn run build
 
 
-# Final stage for app image
-FROM base
+# Stage 2: Serve the React application
+FROM nginx:stable
 
-# Copy built application
-COPY --from=build /app /app
+# Copy built application to Nginx's default public folder
+COPY --from=build /app/build /usr/share/nginx/html
 
-# Expose the application port
-EXPOSE 3001
+# Expose Nginx port
+EXPOSE 80
 
-# Start the server by default, this can be overwritten at runtime
-CMD [ "yarn", "run", "start" ]
+# Start Nginx by default
+CMD ["nginx", "-g", "daemon off;"]
