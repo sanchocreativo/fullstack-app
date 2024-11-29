@@ -1,7 +1,7 @@
-import React from 'react'
-import axios from 'axios'
+import React from "react";
+import axios from "axios";
 
-const UserTable = props => (
+const UserTable = (props) => (
   <table>
     <thead>
       <tr>
@@ -11,30 +11,33 @@ const UserTable = props => (
       </tr>
     </thead>
     <tbody>
-      { 
-         props.data && props.data.map(user => (
+      {props.data &&
+        props.data.map((user) => (
           <tr key={user.id}>
             <td>{user.name}</td>
             <td>{user.email}</td>
             <td>
               <button
                 onClick={() => {
-                  props.editRow(user)
+                  props.editRow(user);
                 }}
                 className="button muted-button"
               >
                 Edit
               </button>
               <button
-                onClick={ event   => {
-                  event.preventDefault()
-                   axios
-                  .delete(`https://santih-node-api.herokuapp.com/users/${user.id}`, user)
-                  .then(() => console.log('User Deleted'))
-                  .catch(err => {
-                    console.error(err);
-                  })
-                  props.deleteUser(user.id, user)
+                onClick={(event) => {
+                  event.preventDefault();
+                  axios
+                    .delete(
+                      `https://backend-lingering-moon-3048.fly.dev/users/${user.id}`,
+                      user
+                    )
+                    .then(() => console.log("User Deleted"))
+                    .catch((err) => {
+                      console.error(err);
+                    });
+                  props.deleteUser(user.id, user);
                 }}
                 className="button muted-button"
               >
@@ -42,10 +45,9 @@ const UserTable = props => (
               </button>
             </td>
           </tr>
-      ) 
-      )}
+        ))}
     </tbody>
   </table>
-)
+);
 
-export default UserTable
+export default UserTable;
