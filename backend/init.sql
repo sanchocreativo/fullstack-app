@@ -5,4 +5,4 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (name, email)
-  VALUES ('Jerry', 'jerry@example.com'), ('George', 'george@example.com');
+  VALUES ('santi', 'santi@example.com'), ('Juan', 'juan@example.com');
