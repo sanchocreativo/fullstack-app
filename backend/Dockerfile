@@ -12,6 +12,8 @@ WORKDIR /app
 # Set production environment
 ENV NODE_ENV="production"
 
+# Install PostgreSQL client (for psql commands)
+RUN apt-get update && apt-get install --no-install-recommends -y postgresql-client && rm -rf /var/lib/apt/lists/*
 
 # Throw-away build stage to reduce size of final image
 FROM base as build
@@ -26,7 +28,6 @@ RUN npm ci
 
 # Copy application code
 COPY . .
-
 
 # Final stage for app image
 FROM base

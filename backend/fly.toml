@@ -7,8 +7,9 @@ app = 'backend-purple-feather-9888'
 primary_region = 'eze'
 
 [build]
+
 [deploy]
-  release_command = "psql $DATABASE_URL -f init.sql"
+  release_command = "psql $DATABASE_URL -f /app/init.sql"
 
 [http_service]
   internal_port = 3000
