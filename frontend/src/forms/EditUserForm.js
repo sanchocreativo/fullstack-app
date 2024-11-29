@@ -21,7 +21,7 @@ const EditUserForm = (props) => {
         event.preventDefault();
         axios
           .put(
-            `https://backend-lingering-moon-3048.fly.dev/users/${user.id}`,
+            `https://backend-purple-feather-9888.fly.dev/users/${user.id}`,
             user
           )
           .then(() => console.log("User Updated"))

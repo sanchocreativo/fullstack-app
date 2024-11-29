@@ -11,7 +11,7 @@ const App = () => {
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios(
-        "https://backend-lingering-moon-3048.fly.dev/users"
+        "https://backend-purple-feather-9888.fly.dev/users"
       );
       setData(result.data);
       console.log(result.data);

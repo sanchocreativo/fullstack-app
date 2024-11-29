@@ -30,7 +30,7 @@ const UserTable = (props) => (
                   event.preventDefault();
                   axios
                     .delete(
-                      `https://backend-lingering-moon-3048.fly.dev/users/${user.id}`,
+                      `https://backend-purple-feather-9888.fly.dev/users/${user.id}`,
                       user
                     )
                     .then(() => console.log("User Deleted"))

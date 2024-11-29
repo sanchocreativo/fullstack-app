@@ -16,7 +16,7 @@ const AddUserForm = (props) => {
     <form
       onSubmit={(event) => {
         axios
-          .post("https://backend-lingering-moon-3048.fly.dev/users", user)
+          .post("https://backend-purple-feather-9888.fly.dev/users", user)
           .then(() => console.log("User Created"))
           .catch((err) => {
             console.error(err);
