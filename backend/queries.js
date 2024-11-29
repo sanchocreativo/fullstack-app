@@ -1,102 +1,79 @@
-var express = require('express');
+const { Pool } = require("pg");
 
-var cors = require('cors')
-
-var app = express();
-
-app.use(cors())
-
-const Pool = require('pg').Pool
-const connectionString = process.env.DATABASE_URL
-
-
+// Use DATABASE_URL from the environment variable
 const pool = new Pool({
-  connectionString: connectionString,
-})
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    rejectUnauthorized: true, // Enable this for production when Fly.io uses SSL
+  },
+});
 
-
-// const pool = new Pool({
-//   user: 'santi',
-//   host: '0.0.0.0',
-//   database: 'api',
-//   password: 'admin',
-//   port: process.env.PORT || 5000,
-// })
-
-
-
-//  const getUsers = async (request, response, error) => {
-//     pool = await pool.connect()
-//     await pool.query('SELECT * FROM users ORDER BY id ASC', results, error);
-
-//     try {
-//       response.status(200).json(results.rows)
-//     } catch (error) {
-//       throw error
-//     }
-// }
-
-// const getUsers = () => pool.query('SELECT * FROM users ORDER BY id ASC')
-//   .then(response => response.rows);
-
-
-  const getUsers = (request, response) => {
-    pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).json(results.rows)
-    })
+// Get all users
+const getUsers = async (req, res) => {
+  try {
+    const results = await pool.query("SELECT * FROM users ORDER BY id ASC");
+    res.status(200).json(results.rows);
+  } catch (error) {
+    console.error("Error fetching users:", error);
+    res.status(500).send("Error fetching users");
   }
+};
 
-const getUserById = (request, response) => {
-  const id = parseInt(request.params.id)
+// Get a user by ID
+const getUserById = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    const results = await pool.query("SELECT * FROM users WHERE id = $1", [id]);
+    res.status(200).json(results.rows);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send(`Error fetching user${error}`);
+  }
+};
 
-  pool.query('SELECT * FROM users WHERE id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).json(results.rows)
-  })
-}
+// Create a new user
+const createUser = async (req, res) => {
+  const { name, email } = req.body;
+  try {
+    const result = await pool.query(
+      "INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id",
+      [name, email]
+    );
+    res.status(201).send(`User added with ID: ${result.rows[0].id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error creating user");
+  }
+};
 
-const createUser = (request, response) => {
-  const { name, email } = request.body
+// Update an existing user
+const updateUser = async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { name, email } = req.body;
+  try {
+    await pool.query("UPDATE users SET name = $1, email = $2 WHERE id = $3", [
+      name,
+      email,
+      id,
+    ]);
+    res.status(200).send(`User modified with ID: ${id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error updating user");
+  }
+};
 
-  pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(201).send(`User added with ID: ${results.insertId}`)
-  })
-}
-
-const updateUser = (request, response) => {
-  const id = parseInt(request.params.id)
-  const { name, email } = request.body
-
-  pool.query(
-    'UPDATE users SET name = $1, email = $2 WHERE id = $3',
-    [name, email, id],
-    (error, results) => {
-      if (error) {
-        throw error
-      }
-      response.status(200).send(`User modified with ID: ${id}`)
-    }
-  )
-}
-
-const deleteUser = (request, response) => {
-  const id = parseInt(request.params.id)
-
-  pool.query('DELETE FROM users WHERE id = $1', [id], (error, results) => {
-    if (error) {
-      throw error
-    }
-    response.status(200).send(`User deleted with ID: ${id}`)
-  })
-}
+// Delete a user
+const deleteUser = async (req, res) => {
+  const id = parseInt(req.params.id);
+  try {
+    await pool.query("DELETE FROM users WHERE id = $1", [id]);
+    res.status(200).send(`User deleted with ID: ${id}`);
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error deleting user");
+  }
+};
 
 module.exports = {
   getUsers,
@@ -104,4 +81,4 @@ module.exports = {
   createUser,
   updateUser,
   deleteUser,
-}
+};

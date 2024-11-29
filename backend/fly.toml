@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for backend-lingering-moon-3048 on 2024-11-29T16:01:32-03:00
+# fly.toml app configuration file generated for backend-purple-feather-9888 on 2024-11-29T16:54:49-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'backend-lingering-moon-3048'
+app = 'backend-purple-feather-9888'
 primary_region = 'eze'
 
 [build]
