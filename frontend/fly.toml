@@ -1,22 +1,38 @@
-# fly.toml app configuration file generated for frontend-blue-frog-5682 on 2024-11-29T18:39:36-03:00
-#
-# See https://fly.io/docs/reference/configuration/ for information about how to use this file.
-#
+# fly.toml app configuration file for frontend-damp-frost-6768
 
-app = 'frontend-blue-frog-5682'
-primary_region = 'eze'
+app = "frontend-damp-frost-6768"
+primary_region = "eze"
 
 [build]
 
 [http_service]
-  internal_port = 3000
+  # Change the internal_port to match the static file server (e.g., Nginx's default port 80)
+  internal_port = 80
   force_https = true
-  auto_stop_machines = 'stop'
+  auto_stop_machines = "stop"
   auto_start_machines = true
   min_machines_running = 0
-  processes = ['app']
+  processes = ["app"]
 
 [[vm]]
-  memory = '1gb'
-  cpu_kind = 'shared'
+  memory = "1gb"
+  cpu_kind = "shared"
   cpus = 1
+
+[[services]]
+  internal_port = 80
+  processes = ["app"]
+
+  [[services.ports]]
+    handlers = ["http"]
+    port = 80
+
+  [[services.ports]]
+    handlers = ["tls", "http"]
+    port = 443
+
+  [services.concurrency]
+    type = "connections"
+    hard_limit = 25
+    soft_limit = 20
+

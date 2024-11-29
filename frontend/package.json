@@ -1,7 +1,7 @@
 {
   "name": "react-hooks",
   "version": "0.1.0",
-  "homepage": "https://www.santih.me/fullstack-app/",
+  "homepage": "https://frontend-damp-frost-6768.fly.dev/",
   "private": true,
   "dependencies": {
     "axios": "^0.21.1",
