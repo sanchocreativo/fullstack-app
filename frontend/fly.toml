@@ -1,9 +1,9 @@
-# fly.toml app configuration file generated for frontend-proud-voice-3309 on 2024-11-29T18:38:30-03:00
+# fly.toml app configuration file generated for frontend-blue-frog-5682 on 2024-11-29T18:39:36-03:00
 #
 # See https://fly.io/docs/reference/configuration/ for information about how to use this file.
 #
 
-app = 'frontend-proud-voice-3309'
+app = 'frontend-blue-frog-5682'
 primary_region = 'eze'
 
 [build]
