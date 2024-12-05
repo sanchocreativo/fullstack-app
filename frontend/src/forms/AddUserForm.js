@@ -9,18 +9,20 @@ const AddUserForm = (props) => {
   const validate = (field, value) => {
     const newErrors = { ...errors };
 
+    // Validate the Name field
     if (field === "name" || !field) {
-      if (!value?.trim()) {
+      if (!user.name.trim() && (!field || field === "name")) {
         newErrors.name = "Name is required.";
       } else {
         delete newErrors.name;
       }
     }
 
+    // Validate the Email field
     if (field === "email" || !field) {
-      if (!value?.trim()) {
+      if ((!field || field === "email") && !user.email.trim()) {
         newErrors.email = "Email is required.";
-      } else if (!/\S+@\S+\.\S+/.test(value)) {
+      } else if (!/\S+@\S+\.\S+/.test(user.email)) {
         newErrors.email = "Email is invalid.";
       } else {
         delete newErrors.email;
@@ -37,7 +39,8 @@ const AddUserForm = (props) => {
     setData({ ...user, [name]: value });
 
     // Validate the specific field
-    setErrors(validate(name, value));
+    const updatedErrors = validate(name, value);
+    setErrors(updatedErrors);
   };
 
   const handleSubmit = (event) => {
@@ -64,6 +67,14 @@ const AddUserForm = (props) => {
     setData(initialFormState);
   };
 
+  const handleBlur = (event) => {
+    const { name, value } = event.target;
+  
+    // Validate the field on blur
+    setErrors(validate(name, value));
+  };
+
+
   return (
     <form onSubmit={handleSubmit}>
       <div>
@@ -73,6 +84,8 @@ const AddUserForm = (props) => {
           name="name"
           value={user.name}
           onChange={handleInputChange}
+          onInput={handleInputChange}
+          onBlur={handleBlur}
         />
         {errors.name && <p style={{ color: "red" }}>{errors.name}</p>}
       </div>
@@ -83,6 +96,8 @@ const AddUserForm = (props) => {
           name="email"
           value={user.email}
           onChange={handleInputChange}
+          onInput={handleInputChange}
+          onBlur={handleBlur}
         />
         {errors.email && <p style={{ color: "red" }}>{errors.email}</p>}
       </div>
