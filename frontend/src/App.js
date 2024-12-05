@@ -7,46 +7,54 @@ import axios from "axios";
 
 const App = () => {
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
-      const result = await axios(
-        "https://backend-purple-feather-9888.fly.dev/users"
-      );
-      setData(result.data);
-      console.log(result.data);
+      try {
+        const result = await axios("https://backend-purple-feather-9888.fly.dev/users");
+        setData(result.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      } finally {
+        setLoading(false);
+      }
     };
     fetchData();
   }, []);
 
   const initialFormState = { id: null, name: "", email: "" };
-
-  // Setting state
-  //   const [ users  ] = useState(data)
   const [currentUser, setCurrentUser] = useState(initialFormState);
   const [editing, setEditing] = useState(false);
 
-  // CRUD operations
   const addUser = (user) => {
-    // user.id = users.length + 1
     setData([...data, user]);
   };
 
-  const deleteUser = (id) => {
+  const updateUser = async (id, updatedUser) => {
     setEditing(false);
-
-    setData(data.filter((user) => user.id !== id));
+    try {
+      await axios.put(`https://backend-purple-feather-9888.fly.dev/users/${id}`, updatedUser);
+      console.log("User updated successfully");
+      setData(data.map((user) => (user.id === id ? updatedUser : user)));
+    } catch (error) {
+      console.error("Error updating user:", error);
+    }
   };
 
-  const updateUser = (id, updatedUser) => {
+  const deleteUser = async (id) => {
     setEditing(false);
-
-    setData(data.map((user) => (user.id === id ? updatedUser : user)));
+    try {
+      await axios.delete(`https://backend-purple-feather-9888.fly.dev/users/${id}`);
+      console.log("User deleted successfully");
+      setData(data.filter((user) => user.id !== id));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
   };
 
   const editRow = (user) => {
     setEditing(true);
-
     setCurrentUser({ id: user.id, name: user.name, email: user.email });
   };
 
@@ -74,7 +82,12 @@ const App = () => {
         </div>
         <div className="flex-large">
           <h2>View users</h2>
-          <UserTable data={data} editRow={editRow} deleteUser={deleteUser} />
+          <UserTable
+            data={data}
+            loading={loading}
+            editRow={editRow}
+            deleteUser={deleteUser}
+          />
         </div>
       </div>
     </div>
